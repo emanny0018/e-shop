@@ -17,6 +17,11 @@ jobs:
           - Identity.API
           - Webhooks.API
           - Mobile.Bff.Shopping
+        test_path:
+          - Basket.UnitTests
+          - Catalog.FunctionalTests
+          - Ordering.FunctionalTests
+          - Ordering.UnitTests
 
     steps:
     - name: Checkout code
@@ -30,10 +35,20 @@ jobs:
     - name: Build Docker Image
       run: |
         cd src/${{ matrix.service }}
-        docker build -t ${{ matrix.service | toLowerCase }}:latest .
+        docker build \
+          -t ${{ matrix.service | toLowerCase }}:latest \
+          --build-arg DATABASE_URL="localhost" \
+          --build-arg DATABASE_NAME="default_db" \
+          --build-arg DATABASE_USER="default_user" \
+          --build-arg DATABASE_PASSWORD="default_password" \
+          --build-arg STORAGE_BUCKET_NAME="default_bucket" \
+          --build-arg STORAGE_ACCESS_KEY="default_access_key" \
+          --build-arg STORAGE_SECRET_KEY="default_secret_key" \
+          --build-arg WEBHOOK_URL="https://webhook.example.com" \
+          --build-arg EXTERNAL_API_KEY="default_api_key" .
 
-    - name: Run Tests
+    - name: Run Unit and Functional Tests
       run: |
-        cd tests/${{ matrix.service }}.UnitTests
+        cd tests/${{ matrix.test_path }}
         dotnet test --logger:trx
 
