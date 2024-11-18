@@ -36,7 +36,7 @@ jobs:
       run: |
         cd src/${{ matrix.service }}
         docker build \
-          -t ${{ format('{0}', matrix.service) | toLowerCase }}:latest \
+          -t ${{ matrix.service }}:latest \
           --build-arg DATABASE_URL="localhost" \
           --build-arg DATABASE_NAME="default_db" \
           --build-arg DATABASE_USER="default_user" \
