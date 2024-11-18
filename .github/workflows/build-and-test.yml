@@ -37,8 +37,10 @@ jobs:
 
     - name: Build Docker Image
       run: |
-        cd src/${{ matrix.service_test.service | replace('.', '/') }}
+        # Convert service name to directory format
+        service_dir=$(echo "${{ matrix.service_test.service }}" | sed 's/\./\//g')
         echo "Building Docker image for ${{ matrix.service_test.service }}"
+        cd src/$service_dir
         docker build \
           -t ${{ matrix.service_test.service }}:latest \
           --build-arg DATABASE_URL="localhost" \
@@ -53,7 +55,7 @@ jobs:
 
     - name: Run Tests
       run: |
-        cd ${{ matrix.service_test.test_path }}
         echo "Running tests in $(pwd)"
+        cd ${{ matrix.service_test.test_path }}
         ls
         dotnet test --logger:trx
