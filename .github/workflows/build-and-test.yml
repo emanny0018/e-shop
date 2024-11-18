@@ -12,13 +12,13 @@ jobs:
     strategy:
       matrix:
         service_test:
-          - service: Basket.API
+          - service: basket.api
             test_path: tests/Basket.UnitTests
-          - service: Catalog.API
+          - service: catalog.api
             test_path: tests/Catalog.FunctionalTests
-          - service: Ordering.API
+          - service: ordering.api
             test_path: tests/Ordering.FunctionalTests
-          - service: Ordering.API
+          - service: ordering.api
             test_path: tests/Ordering.UnitTests
 
     steps:
@@ -37,10 +37,10 @@ jobs:
 
     - name: Build Docker Image
       run: |
-        cd src/${{ matrix.service_test.service }}
-        echo "Building Docker image for ${{ matrix.service_test.service }} in $(pwd)"
+        cd src/${{ matrix.service_test.service | replace('.', '/') }}
+        echo "Building Docker image for ${{ matrix.service_test.service }}"
         docker build \
-          -t ${{ matrix.service_test.service | toLowerCase }}:latest \
+          -t ${{ matrix.service_test.service }}:latest \
           --build-arg DATABASE_URL="localhost" \
           --build-arg DATABASE_NAME="default_db" \
           --build-arg DATABASE_USER="default_user" \
