@@ -4,24 +4,22 @@ on:
   push:
     branches:
       - main
+  pull_request:
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service:
-          - Basket.API
-          - Catalog.API
-          - Ordering.API
-          - Identity.API
-          - Webhooks.API
-          - Mobile.Bff.Shopping
-        test_path:
-          - tests/Basket.UnitTests
-          - tests/Catalog.FunctionalTests
-          - tests/Ordering.FunctionalTests
-          - tests/Ordering.UnitTests
+        service_test:
+          - service: Basket.API
+            test_path: tests/Basket.UnitTests
+          - service: Catalog.API
+            test_path: tests/Catalog.FunctionalTests
+          - service: Ordering.API
+            test_path: tests/Ordering.FunctionalTests
+          - service: Ordering.API
+            test_path: tests/Ordering.UnitTests
 
     steps:
     - name: Checkout code
@@ -39,10 +37,10 @@ jobs:
 
     - name: Build Docker Image
       run: |
-        cd src/${{ matrix.service }}
-        echo "Building Docker image for ${{ matrix.service }} in $(pwd)"
+        cd src/${{ matrix.service_test.service }}
+        echo "Building Docker image for ${{ matrix.service_test.service }} in $(pwd)"
         docker build \
-          -t ${{ matrix.service }}:latest \
+          -t ${{ matrix.service_test.service }}:latest \
           --build-arg DATABASE_URL="localhost" \
           --build-arg DATABASE_NAME="default_db" \
           --build-arg DATABASE_USER="default_user" \
@@ -53,9 +51,9 @@ jobs:
           --build-arg WEBHOOK_URL="https://webhook.example.com" \
           --build-arg EXTERNAL_API_KEY="default_api_key" .
 
-    - name: Run Unit and Functional Tests
+    - name: Run Tests
       run: |
-        cd ${{ matrix.test_path }}
+        cd ${{ matrix.service_test.test_path }}
         echo "Running tests in $(pwd)"
         ls
         dotnet test --logger:trx
