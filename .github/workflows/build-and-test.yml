@@ -40,7 +40,7 @@ jobs:
         cd src/${{ matrix.service_test.service }}
         echo "Building Docker image for ${{ matrix.service_test.service }} in $(pwd)"
         docker build \
-          -t ${{ matrix.service_test.service }}:latest \
+          -t ${{ matrix.service_test.service | toLowerCase }}:latest \
           --build-arg DATABASE_URL="localhost" \
           --build-arg DATABASE_NAME="default_db" \
           --build-arg DATABASE_USER="default_user" \
