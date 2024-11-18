@@ -9,5 +9,18 @@ RUN dotnet publish Identity.API.csproj -c Release -o /app
 FROM gcr.io/distroless/dotnet:9.0
 WORKDIR /app
 COPY --from=build /app .
+# Define tenant-specific environment variables (can be overridden at runtime)
+ENV DATABASE_URL="localhost"
+ENV DATABASE_NAME="default_db"
+ENV DATABASE_USER="default_user"
+ENV DATABASE_PASSWORD="default_password"
+
+ENV STORAGE_BUCKET_NAME="default_bucket"
+ENV STORAGE_ACCESS_KEY="default_access_key"
+ENV STORAGE_SECRET_KEY="default_secret_key"
+
+ENV WEBHOOK_URL="https://webhook.example.com"
+ENV EXTERNAL_API_KEY="default_api_key"
+
 ENTRYPOINT ["dotnet", "Identity.API.dll"]
 
