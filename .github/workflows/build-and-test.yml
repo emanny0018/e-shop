@@ -1,0 +1,39 @@
+name: Build and Test Microservices
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          - Basket.API
+          - Catalog.API
+          - Ordering.API
+          - Identity.API
+          - Webhooks.API
+          - Mobile.Bff.Shopping
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: '9.0.x'
+
+    - name: Build Docker Image
+      run: |
+        cd src/${{ matrix.service }}
+        docker build -t ${{ matrix.service | toLowerCase }}:latest .
+
+    - name: Run Tests
+      run: |
+        cd tests/${{ matrix.service }}.UnitTests
+        dotnet test --logger:trx
+
