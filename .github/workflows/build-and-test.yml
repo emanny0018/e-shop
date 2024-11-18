@@ -36,7 +36,7 @@ jobs:
       run: |
         cd src/${{ matrix.service }}
         docker build \
-          -t ${{ matrix.service | toLowerCase }}:latest \
+          -t ${{ format('{0}', matrix.service) | toLowerCase }}:latest \
           --build-arg DATABASE_URL="localhost" \
           --build-arg DATABASE_NAME="default_db" \
           --build-arg DATABASE_USER="default_user" \
@@ -51,4 +51,3 @@ jobs:
       run: |
         cd tests/${{ matrix.test_path }}
         dotnet test --logger:trx
-
